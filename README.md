@@ -20,8 +20,8 @@ This project was created in a weekend a few months back after frustration from c
 
 
 ### Performance
-![Google pagespeed test desktop](https://user-images.githubusercontent.com/55940669/226196200-8d446620-29ab-418b-84be-8930c776b005.png)
-![Google pagespeed test_mobile](https://user-images.githubusercontent.com/55940669/226196220-95657cea-d0c6-4f3b-8c28-5ea3e9656465.png)
+![Google PageSpeed Test Desktop](https://user-images.githubusercontent.com/55940669/226196200-8d446620-29ab-418b-84be-8930c776b005.png)
+![Google PageSpeed Test Mobile](https://user-images.githubusercontent.com/55940669/226196220-95657cea-d0c6-4f3b-8c28-5ea3e9656465.png)
 
 
 ### Feedback
