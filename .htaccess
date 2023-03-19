@@ -1,0 +1,49 @@
+<IfModule mod_headers.c>
+  SetEnvIf Origin ^*\.theecal\.com$ ORIGIN=$0
+  Header always set Access-Control-Allow-Origin %{ORIGIN}e env=ORIGIN
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Content-Security-Policy ""
+  Header set Permissions-Policy ""
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Add content type
+<Files 404>
+  Header set Content-Type "text/html"
+</Files>
+<Files index>
+  Header set Content-Type "text/html"
+</Files>
+
+# disable indexing
+Options All -Indexes
+
+# prevent access
+<FilesMatch ^\.>
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+<Directory .vscode/*>
+  Order allow,deny
+  Deny from all
+</Directory>
+
+# Redirect
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+
+  # RewriteRule ^.gitignore / [L,NC]
+  
+# Fav icons
+# RewriteRule ^favicon\.ico /fav/favicon\.ico [L,NC]
+# RewriteRule ^favicon\-32.png /fav/favicon\-32\.png [L,NC]
+# RewriteRule ^favicon\-128.png /fav/favicon\-128\.png [L,NC]
+# RewriteRule ^favicon\-180.png /fav/favicon\-180\.png [L,NC]
+# RewriteRule ^favicon\-192.png /fav/favicon\-192\.png [L,NC]
+</IfModule>
+
+# Errors
+ErrorDocument 404 /404
+ErrorDocument 403 /403

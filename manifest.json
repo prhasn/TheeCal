@@ -1,0 +1,24 @@
+{
+    "background_color": "#ffffff",
+    "theme_color": "#6bd1ff",
+    "icons": [
+        {
+            "src": "/img/logo.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/img/logo.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any"
+        }
+    ],
+    "display": "standalone",
+    "orientation": "portrait",
+    "short_name": "TheeCal",
+    "start_url": "/",
+    "description": "Thee Calculator to use everyday",
+    "name": "TheeCal"
+}
