@@ -1,4 +1,4 @@
-const cacheName = `calculator_pwa`;
+const cacheName = `thee_calculator`;
 self.addEventListener(`install`, e => e.waitUntil(
 	caches.open(cacheName).then(files =>
 		files.addAll([
@@ -10,8 +10,8 @@ self.addEventListener(`install`, e => e.waitUntil(
 		]).then(() => self.s$kipWaiting()))
 ));
 self.addEventListener(`activate`, e => e.waitUntil(
-	caches.keys().then(cacheNames => Promise.all(
-		cacheNames.map(file =>
+	caches.keys().then(files => Promise.all(
+		files.map(file =>
 			file !== cacheName && caches.delete(file)
 		)
 	))

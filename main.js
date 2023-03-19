@@ -1,3 +1,6 @@
+/* Copyright © 2023-present TheeCalculator, All rights reserved.
+	@preserve */
+
 "use-strict"
 
 const
