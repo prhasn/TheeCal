@@ -10,6 +10,9 @@ Open TheeCal.com from any device and click install to install it as a native app
 https://theecal.com/
 ```
 
+### Status
+The project is a work in progress. Hopefully, it can showcase the power of progressive web apps, as a future solution for a consistent experience across devices online and offline.
+
 ### Background
 This project was created in a weekend a few months back after frustration from currently available desktop calculators and alternative PWA ones that fail to keep up with UI standards, e.g. Gnome's calculator.
 
