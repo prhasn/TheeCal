@@ -410,7 +410,7 @@ const
         hSetup();
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032508`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032509`));
     };
 
 // Start TheeCal
