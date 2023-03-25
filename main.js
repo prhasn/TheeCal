@@ -55,7 +55,7 @@ const
                 /** App info button */
                 info: s(`.info_wrap`).children[0],
                 /** Clear history button */
-                bin: s(`.history_clear`).children[0],
+                corner: s(`.history_clear`).children[0],
                 /** Toggle history save status */
                 save: s(`.save_wrap`).children[0],
                 /** Copy button */
@@ -68,6 +68,10 @@ const
                 brackets: s(`#bu_brackets`),
                 /** Dot button */
                 dot: s(`#bu_dot`),
+                /** Numpad buttons */
+                numpad: sA(`.num_bu`),
+                /** Numpad icons */
+                icons: sA(`.img_icon`),
                 /** Numbers buttons object */
                 numbers: {
                     /** Number button 9 */
@@ -139,14 +143,14 @@ const
                         calcEqu.innerText = i.innerText.split(` = `)[0];
                         updateUI();
                     }),
-                    flex(bu.bin.parentElement),
+                    flex(bu.corner.parentElement),
                     flex(bu.save.parentElement)
                 ) : (
                     resultsItems[0].innerText = ``,
-                    hide(bu.bin.parentElement),
+                    hide(bu.corner.parentElement),
                     hide(bu.save.parentElement)
                 );
-                
+
                 // Scroll to bottom
                 hContent.scrollTo(0, hContent.scrollHeight);
 
@@ -271,7 +275,7 @@ const
             },
             /** History setup */
             hSetup = () => {
-                bu.bin.onclick = () => {
+                bu.corner.onclick = () => {
                     history = [];
                     hUpdate();
                 };
@@ -279,6 +283,22 @@ const
                 resultsItems = sA(`.history_result`);
                 localStorage.history && (history = JSON.parse(localStorage.history));
                 hUpdate();
+            },
+            /** Dark mode */
+            darkMode = dark => {
+                const bodyClasses = s(`body`).classList;
+                dark ? bodyClasses.remove(`bg_dark`)
+                    : bodyClasses.add(`bg_dark`);
+                bu.numpad.forEach(b => {
+                    const classes = b.classList;
+                    dark ? classes.remove(`t_white`)
+                        : classes.add(`t_white`);
+                });
+                bu.icons.forEach(b => {
+                    const classes = b.classList;
+                    dark ? classes.remove(`dark`)
+                        : classes.add(`dark`);
+                });
             },
             /** Setup buttons */
             buSetup = () => {
@@ -354,15 +374,26 @@ const
                         hide(appInfo),
                         flex(calcSec),
                         flex(bu.save),
-                        flex(bu.bin),
-                        hide(bu.copy)
+                        hide(bu.copy),
+                        bu.corner.src = `./img/delete.svg`,
+                        bu.corner.onclick = () => {
+                            history = [];
+                            hUpdate();
+                        }
                     ) : (
                         hide(calcSec),
                         hide(bu.save),
-                        hide(bu.bin),
                         hide(bu.copy),
                         block(appInfo),
-                        hContent.scrollTo(0, 0) // Scroll to top
+                        hContent.scrollTo(0, 0), // Scroll to top
+                        flex(bu.corner.parentElement),
+                        bu.corner.src = `./img/` + (localStorage.dark ? `light` : `dark`) + `.svg`,
+                        bu.corner.onclick = () => {
+                            const dark = Number(localStorage.dark);
+                            bu.corner.src = `./img/` + (dark ? `dark` : `light`) + `.svg`;
+                            darkMode(dark);
+                            localStorage.dark = !dark ? 1 : 0;
+                        }
                     );
                     // Change icon
                     bu.info.src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
@@ -424,9 +455,10 @@ const
         buSetup();
         hSetup();
         updateUI();
+        darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032515`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032523`));
     };
 
 // Start TheeCal

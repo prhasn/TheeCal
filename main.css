@@ -4,10 +4,11 @@
     --clear: transparent;
     --white: white;
     --black: black;
-    --light_blue: #ebf9ff;
+    --dark: #141414;
+    --light_blue: #43caff1a;
     --sea_blue: #529cbd;
-    --light_green: #d2ffd4;
-    --light_red: #ffe7e7;
+    --light_green: #9dffa22e;
+    --light_red: #ffbabb61;
     --light_grey: #f1f1f1;
     --grey: #c1c1c1;
     --shadow: #00000033;
@@ -28,6 +29,7 @@ body {
     align-items: center;
     max-width: 100vw;
     margin: 0;
+    transition: 0.5s ease-in-out;
 }
 
 p {
@@ -305,6 +307,10 @@ button:active {
     background-color: var(--grey);
 }
 
+.bg_dark {
+    background-color: var(--dark);
+}
+
 .t_white {
     color: var(--white);
 }
@@ -325,4 +331,8 @@ button:active {
 
 .bold {
     font-weight: 700;
+}
+
+.dark {
+    filter: invert(1);
 }
