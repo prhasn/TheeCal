@@ -1,319 +1,417 @@
-/* Copyright © 2023-present TheeCalculator, All rights reserved.
-	@preserve */
+/* Copyright © 2023-present TheeCalculator (TheeCal), All rights reserved.
+    @preserve */
 
 "use-strict"
 
 const
+    /** TheeCalculator initiation */
     start = () => {
 
         let
+            /** Equation done */
             equalDone = false,
+            /** History record array */
             history = [],
+            /** History display entries */
             resultsItems;
 
         const
-            select = c => document.querySelector(c),
-            selectAll = c => document.querySelectorAll(c),
+            /** Select element */
+            s = c => document.querySelector(c),
+            /** Select element array */
+            sA = c => document.querySelectorAll(c),
+            /** Flex display */
             flex = e => e.style.display = `flex`,
+            /** Block display */
             block = e => e.style.display = `block`,
+            /** Hide elements */
             hide = e => e.style.display = `none`,
-            classCheck = (e, c) => e.classList.contains(c) ? false : true,
+            /** Check elements class list */
+            classCheck = (/** Element */ e, /** Class */ c) => e.classList.contains(c) ? false : true,
+            /** Disable button */
             disableBu = e => e.classList.add(`shadow_inside`),
+            /** Disable buttons array */
             disableAll = a => a.forEach(e => e.classList.add(`shadow_inside`)),
+            /** Enable button */
             enableBu = e => e.classList.remove(`shadow_inside`),
+            /** Enable buttons array */
             enableAll = a => a.forEach(e => e.classList.remove(`shadow_inside`)),
+            /** Check button enable status */
             enabledCheck = e => classCheck(e, `shadow_inside`),
+            /** Expression buttons */
             expressions = [`÷`, `×`, `-`, `+`],
-            infoBu = select(`.info_wrap`).children[0],
-            historyClear = select(`.history_clear`).children[0],
-            historyContent = select(`.history_content`),
-            historySaveBu = select(`.save_wrap`).children[0],
-            saveOff = `./img/save_off.svg`,
-            saveOn = `./img/save_on.svg`,
-            topBottomClass = `shadow_top_bottom`,
-            historyScroll = () =>
-                !historyContent.scrollTop || historyContent.scrollTop > (
-                    historyContent.scrollHeight - historyContent.clientHeight
-                ) ?
-                    historyContent.classList.remove(topBottomClass)
-                    : historyContent.classList.add(topBottomClass), // reached top
-            historySaveUpdate = () => historySaveBu.src =
-                localStorage.history ? saveOn : saveOff,
-            historyUpdate = () => {
+            /** History list */
+            hContent = s(`.history_content`),
+            /** App info */
+            appInfo = s(`.app_info`),
+            /** Calculator input section */
+            calcSec = s(`.calc_section`),
+            /** Main input display */
+            calcEqu = s(`.calc_equation`),
+            /** Results display */
+            calcResult = s(`.calc_result`),
+            /** Button elements */
+            bu = {
+                /** App info button */
+                info: s(`.info_wrap`).children[0],
+                /** Clear history button */
+                bin: s(`.history_clear`).children[0],
+                /** Toggle history save status */
+                save: s(`.save_wrap`).children[0],
+                /** Copy button */
+                copy: s(`.copy_wrap`).children[0],
+                /** Backspace button */
+                back: s(`#bu_back`),
+                /** Clear all button */
+                clear: s(`#bu_clear`),
+                /** Brackets button */
+                brackets: s(`#bu_brackets`),
+                /** Dot button */
+                dot: s(`#bu_dot`),
+                /** Numbers buttons object */
+                numbers: {
+                    bu9: s(`#bu_9`),
+                    bu8: s(`#bu_8`),
+                    bu7: s(`#bu_7`),
+                    bu6: s(`#bu_6`),
+                    bu5: s(`#bu_5`),
+                    bu4: s(`#bu_4`),
+                    bu3: s(`#bu_3`),
+                    bu2: s(`#bu_2`),
+                    bu1: s(`#bu_1`),
+                    bu0: s(`#bu_0`),
+                    buPercentage: s(`#bu_percentage`),
+                },
+                /** Expression buttons */
+                exp: {
+                    buDivide: s(`#bu_divide`),
+                    buMultiply: s(`#bu_multiply`),
+                    buMinus: s(`#bu_minus`),
+                    buPlus: s(`#bu_plus`),
+                },
+                /** Equal button */
+                equal: s(`#bu_equal`)
+            },
+            /** Save mode toggle */
+            saveToggle = () => {
+                const h = localStorage.history;
+                bu.save.title = `History save: ` + (h ? `on` : `off`);
+                bu.save.src = `./img/` + (h ? `save_on` : `save_off`) + `.svg`;
+            },
+            /** Content shadows update */
+            hShadow = () => {
+                const
+                    h = hContent.scrollTop,
+                    l = hContent.classList;
+                !h || h > (hContent.scrollHeight - hContent.clientHeight) ?
+                    // Toggle shadow
+                    l.remove(`shadow_top_bottom`) : l.add(`shadow_top_bottom`)
+            },
+            /** History general update */
+            hUpdate = () => {
                 const
                     l = resultsItems.length,
                     t = history.length;
-
                 if (t > l) for (let i = l; i < t; i++)
-                    historyContent.appendChild(resultsItems[0].cloneNode(1));
-
+                    hContent.appendChild(resultsItems[0].cloneNode(1));
                 else if (t < l) for (let i = (t || 1); i < l; i++)
                     resultsItems[i].remove();
-
-                resultsItems = selectAll(`.history_result`);
-
+                resultsItems = sA(`.history_result`);
                 for (let i = 0; i < history.length; i++)
                     resultsItems[i].innerText = history[i];
-
                 history.length ? (
                     resultsItems.forEach(i => i.onclick = () => {
-                        calcEqu.innerText = ``;
-                        calcResult.value = i.innerText.split(` = `)[0];
+                        calcResult.innerText = ``;
+                        calcEqu.innerText = i.innerText.split(` = `)[0];
                         updateUI();
                     }),
-                    flex(historyClear.parentElement),
-                    flex(historySaveBu.parentElement)
+                    flex(bu.bin.parentElement),
+                    flex(bu.save.parentElement)
                 ) : (
                     resultsItems[0].innerText = ``,
-                    hide(historyClear.parentElement),
-                    hide(historySaveBu.parentElement)
+                    hide(bu.bin.parentElement),
+                    hide(bu.save.parentElement)
                 );
-                historyContent.scrollTo(0, historyContent.scrollHeight);
-                historyScroll();
-                historySaveUpdate();
+                // Scroll to bottom
+                hContent.scrollTo(0, hContent.scrollHeight);
+                // Update scroll shadows
+                hShadow();
+                saveToggle();
                 localStorage.history && (localStorage.history = JSON.stringify(history));
             },
-            calcEqu = select(`.calc_equation`),
-            calcResult = select(`.calc_result`),
-            copyIcon = select(`.copy_wrap`).children[0],
-            buBack = select(`#bu_back`),
-            buClear = select(`#bu_clear`),
+            /** Clear all inputs */
             clearAll = () => {
-                calcEqu.innerText = ``;
-                calcResult.value = `0`;
+                calcEqu.innerText = `0`;
+                calcResult.innerText = ``;
                 updateUI();
             },
-            buBrackets = select(`#bu_brackets`),
+            /** Check brackets status */
             bracketCheck = value => (value.match(/[(]/g) || []).length >
                 (value.match(/[)]/g) || []).length,
-            buDot = select(`#bu_dot`),
-            buNumbers = {
-                bu9: select(`#bu_9`),
-                bu8: select(`#bu_8`),
-                bu7: select(`#bu_7`),
-                bu6: select(`#bu_6`),
-                bu5: select(`#bu_5`),
-                bu4: select(`#bu_4`),
-                bu3: select(`#bu_3`),
-                bu2: select(`#bu_2`),
-                bu1: select(`#bu_1`),
-                bu0: select(`#bu_0`),
-                buPercentage: select(`#bu_percentage`),
-            },
-            buExp = {
-                buDivide: select(`#bu_divide`),
-                buMultiply: select(`#bu_multiply`),
-                buMinus: select(`#bu_minus`),
-                buPlus: select(`#bu_plus`),
-            },
-            buEqual = select(`#bu_equal`),
+
+            /** Clear results */
             resultsRevert = () => equalDone && (
-                calcResult.value = calcEqu.innerText.split(` =`)[0],
-                calcEqu.innerText = ``,
+                calcEqu.innerText = calcResult.innerText.split(` =`)[0],
+                calcResult.innerText = ``,
                 equalDone = false
             ),
+            /** Update all buttons status */
             updateUI = v => {
 
                 // analyse value
-                let value = calcResult.value;
+                let value = calcEqu.innerText;
                 v != undefined && (
                     value != `0` && (!equalDone || expressions.indexOf(v) > -1) ? (
                         !equalDone ? resultsRevert() : equalDone = false,
-                        calcResult.value += v
+                        calcEqu.innerText += v
                     ) : (
                         equalDone = false,
-                        calcEqu.innerText = ``,
-                        calcResult.value = v
+                        calcResult.innerText = ``,
+                        calcEqu.innerText = v
                     )
                 );
-                value == `` && (calcResult.value = `0`);
-                value = calcResult.value;
+                value == `` && (calcEqu.innerText = `0`);
+                value = calcEqu.innerText;
 
                 // enable/disable buttons
                 const
-                    cha = value.length,
-                    last = value[cha - 1],
-                    ratio = calcResult.clientWidth / cha;
-                last == `%` || last == `)` ? numDisable() : numEnable();
+                    length = value.length,
+                    last = value[length - 1],
+                    ratio = calcEqu.clientWidth / length;
+                if (last == `%` || last == `)`) { // Disable numbers pad                    
+                    for (const b in bu.numbers) disableBu(bu.numbers[b]);
+                    disableBu(bu.dot);
+                } else { // Enable numbers pad
+                    for (const b in bu.numbers) enableBu(bu.numbers[b]);
+                    enableBu(bu.dot);
+                };
                 value == `0` ? (
-                    hide(copyIcon.parentElement),
-                    disableAll([buBack, buClear, buEqual])
+                    hide(bu.copy.parentElement),
+                    disableAll([bu.back, bu.clear, bu.equal])
                 ) : (
-                    flex(copyIcon.parentElement),
-                    enableAll([buBack, buClear, buEqual])
+                    flex(bu.copy.parentElement),
+                    enableAll([bu.back, bu.clear, bu.equal])
                 );
                 value == `0` || last == `÷` || last == `×`
                     || last == `-` || last == `+` || bracketCheck(value) ?
-                    enableBu(buBrackets) : disableBu(buBrackets);
-
+                    enableBu(bu.brackets) : disableBu(bu.brackets);
                 value == `0` || expressions.indexOf(last) > -1 || last == `.` || last == `(` ?
-                    disableBu(buEqual) : enableBu(buEqual);
+                    disableBu(bu.equal) : enableBu(bu.equal);
 
-                // change font
-                calcResult.style.fontSize = (ratio > 70 ? 100
-                    : ratio > 55 ? 80
-                        : ratio > 40 ? 60
-                            : 40) + `px`;
+                // check numbers
+                if (Number(last) || value == `0`) {
+                    if (value == `0`) {
+                        disableBu(bu.numbers.buPercentage);
+                        for (const e in bu.exp) disableBu(bu.exp[e]);
+                    } else {
+                        enableBu(bu.numbers.buPercentage);
+                        for (const e in bu.exp) enableBu(bu.exp[e]);
+                    };
+                    disableBu(bu.brackets);
+                } else {
+                    disableBu(bu.numbers.buPercentage);
+                    enableBu(bu.brackets);
+                };
+
+                // Update font size
+                calcEqu.style.fontSize = (
+                    ratio > 60 ? 100
+                        : ratio > 45 ? 80
+                            : ratio > 30 ? 60
+                                : 20
+                ) + `px`;
+                liveResults();
             },
-            buttonSetup = (bu, v) => {
-                v = v || bu.innerText;
-                bu.onclick = () => enabledCheck(bu) && updateUI(v);
+            /** Live results calculation */
+            liveResults = () => {
+
+                /** Input value */
+                const equation = calcEqu.innerText;
+
+                // Sanitise input
+                for (let i = 0; i < equation.length; i++)
+                    if (!equation[i].match(/\d|\+|\-|\÷|\×|\%|\(|\)|\./g)) return
+
+                // Evaluate input
+                try {
+                    /**
+                     * Eval options:
+                     * new Function("return " + calc)()
+                     * window.eval[0](calc)
+                     * [eval][0](calc)
+                     */
+                    const final = Number(
+                        [eval][0](
+                            equation
+                                .replaceAll(/\×/g, `*`)
+                                .replaceAll(/\÷/g, `/`)
+                                .replaceAll(/\%/g, `*0.01`)
+                        )
+                    );
+                    (final || final == 0) && (calcResult.innerText = final);
+                    return { equation, final }
+                } catch { return {}; };
             },
-            expSetup = (bu, v) => {
-                v = v || bu.innerText;
-                bu.onclick = () => {
-                    if (enabledCheck(bu)) {
-                        const
-                            value = calcResult.value,
-                            lastNum = value.length - 1,
-                            last = value[lastNum];
-                        expressions.indexOf(last) > -1 && (
-                            calcResult.value = value.slice(0, lastNum)
-                        );
-                        updateUI(v);
+            /** History setup */
+            hSetup = () => {
+                bu.bin.onclick = () => {
+                    history = [];
+                    hUpdate();
+                };
+                hContent.onscroll = () => hShadow();
+                resultsItems = sA(`.history_result`);
+                localStorage.history && (history = JSON.parse(localStorage.history));
+                hUpdate();
+                localStorage.notice ? bu.info.click()
+                    : hContent.scrollTo(0, 0);
+            },
+            /** Setup buttons */
+            buSetup = () => {
+                bu.save.onclick = () => {
+                    localStorage.history ? localStorage.removeItem(`history`)
+                        : localStorage.history = JSON.stringify(history);
+                    saveToggle();
+                };
+                bu.copy.onclick = () => navigator.clipboard.writeText(calcEqu.innerText);
+                bu.back.onclick = () => {
+                    if (enabledCheck(bu.back)) {
+                        resultsRevert();
+                        const value = calcEqu.innerText;
+                        value != `0` && (calcEqu.innerText = value.slice(0, value.length - 1));
+                        updateUI();
                     };
                 };
-            },
-            numDisable = () => {
-                for (const b in buNumbers)
-                    disableBu(buNumbers[b]);
-                disableBu(buDot);
-            },
-            numEnable = () => {
-                for (const b in buNumbers)
-                    enableBu(buNumbers[b]);
-                enableBu(buDot);
-            };
-
-        // clear history
-        historyClear.onclick = () => {
-            history = [];
-            historyUpdate();
-        };
-
-        // history scroll
-        historyContent.onscroll = () => historyScroll();
-
-        // history save
-        historySaveBu.onclick = () => localStorage.history ? (
-            localStorage.removeItem(`history`),
-            historySaveUpdate()
-        ) : (
-            localStorage.history = JSON.stringify(history),
-            historySaveUpdate()
-        );
-
-        // copy button
-        copyIcon.onclick = () => navigator.clipboard.writeText(calcResult.value);
-
-        // backspace
-        buBack.onclick = () => {
-            if (enabledCheck(buBack)) {
-                resultsRevert();
-                const value = calcResult.value;
-                value != `0` && (calcResult.value = value.slice(0, value.length - 1));
-                updateUI();
-            };
-        };
-
-        // clear
-        buClear.onclick = () => enabledCheck(buClear) && clearAll();
-
-        // brackets
-        buBrackets.onclick = () => {
-            if (enabledCheck(buBrackets)) {
-                const value = calcResult.value;
-                calcResult.value += bracketCheck(value) ? `)` : `(`;
-                updateUI();
-            };
-        };
-
-        // numbers
-        for (const b in buNumbers)
-            buttonSetup(buNumbers[b]);
-
-        // dot
-        buDot.onclick = () => {
-            if (enabledCheck(buDot)) {
-                const value = calcResult.value;
-                for (let i = value.length - 1; i > -1; i--) {
-                    const v = value[i];
-                    if (equalDone) break
-                    else if (v.match(/\./g)) return
-                    else if (expressions.indexOf(v) > -1 || v == `%`) break
+                bu.clear.onclick = () => enabledCheck(bu.clear) && clearAll();
+                bu.brackets.onclick = () => enabledCheck(bu.brackets) && (
+                    calcEqu.innerText += bracketCheck(calcEqu.innerText) ? `)` : `(`,
+                    updateUI()
+                );
+                for (const b in bu.numbers) {
+                    const button = bu.numbers[b];
+                    button.onclick = () => enabledCheck(button) && updateUI(button.innerText);
                 };
-                updateUI(`.`);
-            };
-        };
-
-        // expressions
-        for (const b in buExp)
-            expSetup(buExp[b]);
-
-        // update
-        calcResult.oninput = () => updateUI();
-
-        // equal
-        buEqual.onclick = () => {
-            if (enabledCheck(buEqual)) {
-
-                // define values
-                const
-                    value = calcResult.value,
-                    check = /\d|\+|\-|\÷|\×|\%|\(|\)|\./g;
-
-                // sanitise input
-                for (let i = 0; i < value.length; i++)
-                    if (!value[i].match(check)) return
-
-                // switch values
-                let calc = ``;
-                for (let i = 0; i < value.length; i++) {
-                    const c = value[i];
-                    calc += c.match(/\×/g) ? `*`
-                        : c.match(/\÷/g) ? `/`
-                            : c.match(/\%/g) ? `*0.01`
-                                : c;
+                bu.dot.onclick = () => {
+                    if (enabledCheck(bu.dot)) {
+                        const value = calcEqu.innerText;
+                        for (let i = value.length - 1; i > -1; i--) {
+                            const v = value[i];
+                            if (equalDone) break
+                            else if (v.match(/\./g)) return
+                            else if (expressions.indexOf(v) > -1 || v == `%`) break
+                        };
+                        updateUI(`.`);
+                    };
                 };
-
-                // evaluate input
-                // const final = new Function("return " + calc)();
-                // const final = window.eval[0](calc);
-                const final = [eval][0](calc);
-
-
-                // show and record result
-                if (Number(final)) {
-                    equalDone = true;
-                    calcEqu.innerText = value + ` =`;
-                    calcResult.value = final;
-                    history.push(value + ` = ` + final);
+                // Expression buttons initial setup
+                for (const b in bu.exp) {
+                    const button = bu.exp[b];
+                    button.onclick = () => {
+                        if (enabledCheck(button)) {
+                            const
+                                value = calcEqu.innerText,
+                                lastNum = value.length - 1;
+                            expressions.indexOf(value[lastNum]) > -1 && (
+                                calcEqu.innerText = value.slice(0, lastNum)
+                            );
+                            updateUI(button.innerText);
+                        };
+                    };
                 };
-
-                historyUpdate();
+                // Equal button setup
+                bu.equal.onclick = () => {
+                    const results = liveResults();
+                    enabledCheck(bu.equal)
+                        && (results.final || results.final == 0)
+                        && (
+                            equalDone = true,
+                            history.push(results.equation + ` = ` + results.final),
+                            hUpdate()
+                        );
+                };
+                // Info button setup
+                bu.info.onclick = () => {
+                    /** Info hidden status */
+                    const infoShown = appInfo.style.display != `none`;
+                    // Hide/Show calculation history
+                    resultsItems.forEach(e => infoShown ? block(e) : hide(e));
+                    // Show info, hide calculator
+                    infoShown ? (
+                        hide(appInfo),
+                        flex(calcSec),
+                        flex(bu.save),
+                        flex(bu.bin)
+                    ) : (
+                        hide(calcSec),
+                        hide(bu.save),
+                        hide(bu.bin),
+                        block(appInfo),
+                        hContent.scrollTo(0, 0) // Scroll to top
+                    );
+                    // Change icon
+                    bu.info.src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
+                    // Change icon description
+                    bu.info.title = infoShown ? `Learn more` : `Back to calculator`;
+                    // Save view status
+                    !localStorage.notice && (localStorage.notice = 1);
+                    // Update UI
+                    updateUI();
+                };
+                // Buttons listeners
+                document.addEventListener(`keydown`,
+                    e => {
+                        const k = e.key;
+                        k == `Enter` ? (
+                            bu.equal.click()
+                        ) : k == `Escape` ? (
+                            bu.clear.click()
+                        ) : k == `Backspace` ? (
+                            bu.back.click()
+                        ) : k == `9` ? (
+                            bu.numbers.bu9.click()
+                        ) : k == `8` ? (
+                            bu.numbers.bu8.click()
+                        ) : k == `7` ? (
+                            bu.numbers.bu7.click()
+                        ) : k == `6` ? (
+                            bu.numbers.bu6.click()
+                        ) : k == `5` ? (
+                            bu.numbers.bu5.click()
+                        ) : k == `4` ? (
+                            bu.numbers.bu4.click()
+                        ) : k == `3` ? (
+                            bu.numbers.bu3.click()
+                        ) : k == `2` ? (
+                            bu.numbers.bu2.click()
+                        ) : k == `1` ? (
+                            bu.numbers.bu1.click()
+                        ) : k == `0` ? (
+                            bu.numbers.bu0.click()
+                        ) : k == `.` ? (
+                            bu.dot.click()
+                        ) : k == `%` ? (
+                            bu.numbers.buPercentage.click()
+                        ) : k == `-` ? (
+                            bu.exp.buMinus.click()
+                        ) : k == `+` ? (
+                            bu.exp.buPlus.click()
+                        ) : k == `*` ? (
+                            bu.exp.buMultiply.click()
+                        ) : k == `/` ? (
+                            bu.exp.buDivide.click()
+                        ) : k == `(` || k == `)` ? (
+                            bu.brackets.click()
+                        ) : 0;
+                    }
+                );
             };
-        };
 
-        // info button
-        infoBu.onclick = () => infoBu.src = infoBu.src.match(`back.svg`) ? (
+        // Setup everything
+        buSetup();
+        hSetup();
 
-            `./img/info.svg`
-        ) : (
-
-            `./img/back.svg`
-        );
-
-        // start
-        resultsItems = selectAll(`.history_result`);
-        localStorage.history && (history = JSON.parse(localStorage.history));
-        historyUpdate();
-        calcResult.focus();
-        updateUI();
-
-        // register service worker
-        navigator.serviceWorker &&
-            (window.onload = () => navigator.serviceWorker.register('./sw.js'));
-
+        // Service worker registration
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032508`));
     };
 
+// Start TheeCal
 start();
