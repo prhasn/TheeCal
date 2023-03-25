@@ -70,23 +70,38 @@ const
                 dot: s(`#bu_dot`),
                 /** Numbers buttons object */
                 numbers: {
+                    /** Number button 9 */
                     bu9: s(`#bu_9`),
+                    /** Number button 8 */
                     bu8: s(`#bu_8`),
+                    /** Number button 7 */
                     bu7: s(`#bu_7`),
+                    /** Number button 6 */
                     bu6: s(`#bu_6`),
+                    /** Number button 5 */
                     bu5: s(`#bu_5`),
+                    /** Number button 4 */
                     bu4: s(`#bu_4`),
+                    /** Number button 3 */
                     bu3: s(`#bu_3`),
+                    /** Number button 2 */
                     bu2: s(`#bu_2`),
+                    /** Number button 1 */
                     bu1: s(`#bu_1`),
+                    /** Number button 0 */
                     bu0: s(`#bu_0`),
-                    buPercentage: s(`#bu_percentage`),
+                    /** Percentage Button */
+                    buPer: s(`#bu_percentage`),
                 },
                 /** Expression buttons */
                 exp: {
+                    /** Divide button */
                     buDivide: s(`#bu_divide`),
+                    /** Multiply button */
                     buMultiply: s(`#bu_multiply`),
+                    /** Minus button */
                     buMinus: s(`#bu_minus`),
+                    /** Plus button */
                     buPlus: s(`#bu_plus`),
                 },
                 /** Equal button */
@@ -104,7 +119,6 @@ const
                     h = hContent.scrollTop,
                     l = hContent.classList;
                 !h || h > (hContent.scrollHeight - hContent.clientHeight) ?
-                    // Toggle shadow
                     l.remove(`shadow_top_bottom`) : l.add(`shadow_top_bottom`)
             },
             /** History general update */
@@ -132,8 +146,10 @@ const
                     hide(bu.bin.parentElement),
                     hide(bu.save.parentElement)
                 );
+                
                 // Scroll to bottom
                 hContent.scrollTo(0, hContent.scrollHeight);
+
                 // Update scroll shadows
                 hShadow();
                 saveToggle();
@@ -148,13 +164,42 @@ const
             /** Check brackets status */
             bracketCheck = value => (value.match(/[(]/g) || []).length >
                 (value.match(/[)]/g) || []).length,
-
             /** Clear results */
             resultsRevert = () => equalDone && (
                 calcEqu.innerText = calcResult.innerText.split(` =`)[0],
                 calcResult.innerText = ``,
                 equalDone = false
             ),
+            /** Live results calculation */
+            liveResults = () => {
+
+                /** Input value */
+                const equation = calcEqu.innerText;
+
+                // Sanitise input
+                for (let i = 0; i < equation.length; i++)
+                    if (!equation[i].match(/\d|\+|\-|\÷|\×|\%|\(|\)|\./g)) return
+
+                // Evaluate input
+                try {
+                    /**
+                     * Eval options:
+                     * new Function("return " + calc)()
+                     * window.eval[0](calc)
+                     * [eval][0](calc)
+                     */
+                    const final = Number(
+                        [eval][0](
+                            equation
+                                .replaceAll(/\×/g, `*`)
+                                .replaceAll(/\÷/g, `/`)
+                                .replaceAll(/\%/g, `*0.01`)
+                        )
+                    );
+                    (final || final == 0) && (calcResult.innerText = final);
+                    return { equation, final }
+                } catch { return {}; };
+            },
             /** Update all buttons status */
             updateUI = v => {
 
@@ -201,15 +246,15 @@ const
                 // check numbers
                 if (Number(last) || value == `0`) {
                     if (value == `0`) {
-                        disableBu(bu.numbers.buPercentage);
+                        disableBu(bu.numbers.buPer);
                         for (const e in bu.exp) disableBu(bu.exp[e]);
                     } else {
-                        enableBu(bu.numbers.buPercentage);
+                        enableBu(bu.numbers.buPer);
                         for (const e in bu.exp) enableBu(bu.exp[e]);
                     };
                     disableBu(bu.brackets);
                 } else {
-                    disableBu(bu.numbers.buPercentage);
+                    disableBu(bu.numbers.buPer);
                     enableBu(bu.brackets);
                 };
 
@@ -220,37 +265,9 @@ const
                             : ratio > 30 ? 60
                                 : 20
                 ) + `px`;
+
+                // Live results
                 liveResults();
-            },
-            /** Live results calculation */
-            liveResults = () => {
-
-                /** Input value */
-                const equation = calcEqu.innerText;
-
-                // Sanitise input
-                for (let i = 0; i < equation.length; i++)
-                    if (!equation[i].match(/\d|\+|\-|\÷|\×|\%|\(|\)|\./g)) return
-
-                // Evaluate input
-                try {
-                    /**
-                     * Eval options:
-                     * new Function("return " + calc)()
-                     * window.eval[0](calc)
-                     * [eval][0](calc)
-                     */
-                    const final = Number(
-                        [eval][0](
-                            equation
-                                .replaceAll(/\×/g, `*`)
-                                .replaceAll(/\÷/g, `/`)
-                                .replaceAll(/\%/g, `*0.01`)
-                        )
-                    );
-                    (final || final == 0) && (calcResult.innerText = final);
-                    return { equation, final }
-                } catch { return {}; };
             },
             /** History setup */
             hSetup = () => {
@@ -262,8 +279,6 @@ const
                 resultsItems = sA(`.history_result`);
                 localStorage.history && (history = JSON.parse(localStorage.history));
                 hUpdate();
-                localStorage.notice ? bu.info.click()
-                    : hContent.scrollTo(0, 0);
             },
             /** Setup buttons */
             buSetup = () => {
@@ -331,7 +346,7 @@ const
                 // Info button setup
                 bu.info.onclick = () => {
                     /** Info hidden status */
-                    const infoShown = appInfo.style.display != `none`;
+                    const infoShown = appInfo.style.display == `block`;
                     // Hide/Show calculation history
                     resultsItems.forEach(e => infoShown ? block(e) : hide(e));
                     // Show info, hide calculator
@@ -351,8 +366,6 @@ const
                     bu.info.src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
                     // Change icon description
                     bu.info.title = infoShown ? `Learn more` : `Back to calculator`;
-                    // Save view status
-                    !localStorage.notice && (localStorage.notice = 1);
                     // Update UI
                     updateUI();
                 };
@@ -389,7 +402,7 @@ const
                         ) : k == `.` ? (
                             bu.dot.click()
                         ) : k == `%` ? (
-                            bu.numbers.buPercentage.click()
+                            bu.numbers.buPer.click()
                         ) : k == `-` ? (
                             bu.exp.buMinus.click()
                         ) : k == `+` ? (
@@ -408,9 +421,10 @@ const
         // Setup everything
         buSetup();
         hSetup();
+        updateUI();
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032509`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032513`));
     };
 
 // Start TheeCal

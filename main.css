@@ -139,7 +139,7 @@ button:active {
 }
 
 .app_info {
-    display: block;
+    display: none;
     padding: 0 24px 40px 24px;
     font-size: 16px;
 }
@@ -196,7 +196,7 @@ button:active {
 }
 
 .calc_section {
-    display: none;
+    display: flex;
     align-items: flex-end;
     flex-direction: column;
     justify-content: space-between;
