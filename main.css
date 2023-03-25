@@ -5,7 +5,7 @@
     --white: white;
     --black: black;
     --light_blue: #ebf9ff;
-    --solid_blue: #6bd1ff;
+    --sea_blue: #529cbd;
     --light_green: #d2ffd4;
     --light_red: #ffe7e7;
     --light_grey: #f1f1f1;
@@ -290,7 +290,7 @@ button:active {
 }
 
 .bg_blue {
-    background-color: var(--solid_blue);
+    background-color: var(--sea_blue);
 }
 
 .bg_l_green {

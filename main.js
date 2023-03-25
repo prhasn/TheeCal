@@ -354,11 +354,13 @@ const
                         hide(appInfo),
                         flex(calcSec),
                         flex(bu.save),
-                        flex(bu.bin)
+                        flex(bu.bin),
+                        hide(bu.copy)
                     ) : (
                         hide(calcSec),
                         hide(bu.save),
                         hide(bu.bin),
+                        hide(bu.copy),
                         block(appInfo),
                         hContent.scrollTo(0, 0) // Scroll to top
                     );
@@ -424,7 +426,7 @@ const
         updateUI();
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032513`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032515`));
     };
 
 // Start TheeCal

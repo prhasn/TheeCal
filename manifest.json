@@ -1,15 +1,15 @@
 {
     "background_color": "#ffffff",
-    "theme_color": "#6bd1ff",
+    "theme_color": "#529cbd",
     "icons": [
         {
-            "src": "/img/logo.png?23032513",
+            "src": "/img/logo.png?23032515",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "maskable"
         },
         {
-            "src": "/img/logo.png?23032513",
+            "src": "/img/logo.png?23032515",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "any"
