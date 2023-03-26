@@ -165,8 +165,8 @@ const
                 calcResult.innerText = ``;
                 updateUI();
             },
-            /** Check brackets status */
-            bracketCheck = value => (value.match(/[(]/g) || []).length >
+            /** Brackets opened */
+            bracketOpen = value => (value.match(/[(]/g) || []).length >
                 (value.match(/[)]/g) || []).length,
             /** Clear results */
             resultsRevert = () => equalDone && (
@@ -241,14 +241,11 @@ const
                     flex(bu.copy.parentElement),
                     enableAll([bu.back, bu.clear, bu.equal])
                 );
-                value == `0` || last == `÷` || last == `×`
-                    || last == `-` || last == `+` || bracketCheck(value) ?
-                    enableBu(bu.brackets) : disableBu(bu.brackets);
                 value == `0` || expressions.indexOf(last) > -1 || last == `.` || last == `(` ?
                     disableBu(bu.equal) : enableBu(bu.equal);
 
                 // check numbers
-                if (Number(last) || value == `0`) {
+                if (Number(last) || last == `%` || value == `0`) {
                     if (value == `0`) {
                         disableBu(bu.numbers.buPer);
                         for (const e in bu.exp) disableBu(bu.exp[e]);
@@ -256,10 +253,10 @@ const
                         enableBu(bu.numbers.buPer);
                         for (const e in bu.exp) enableBu(bu.exp[e]);
                     };
-                    disableBu(bu.brackets);
+                    bracketOpen(value) || value == `0` ? enableBu(bu.brackets) : disableBu(bu.brackets);
                 } else {
                     disableBu(bu.numbers.buPer);
-                    enableBu(bu.brackets);
+                    bracketOpen(value) ? disableBu(bu.brackets) : enableBu(bu.brackets);
                 };
 
                 // Update font size
@@ -317,10 +314,14 @@ const
                     };
                 };
                 bu.clear.onclick = () => enabledCheck(bu.clear) && clearAll();
-                bu.brackets.onclick = () => enabledCheck(bu.brackets) && (
-                    calcEqu.innerText += bracketCheck(calcEqu.innerText) ? `)` : `(`,
-                    updateUI()
-                );
+                bu.brackets.onclick = () => {
+                    if (enabledCheck(bu.brackets)) {
+                        const value = calcEqu.innerText;
+                        value == `0` ? calcEqu.innerText = `(`
+                            : calcEqu.innerText += bracketOpen(value) ? `)` : `(`;
+                        updateUI();
+                    };
+                };
                 for (const b in bu.numbers) {
                     const button = bu.numbers[b];
                     button.onclick = () => enabledCheck(button) && updateUI(button.innerText);
@@ -458,7 +459,7 @@ const
         darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032523`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032526`));
     };
 
 // Start TheeCal

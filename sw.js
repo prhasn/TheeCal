@@ -5,11 +5,11 @@ const cacheName = `thee_calculator`;
 self.oninstall = e => e.waitUntil(
 	caches.open(cacheName).then(files =>
 		files.addAll([
-			`./index.html?23032523`,
-			`./main.css?23032523`,
-			`./main.js?23032523`,
-			`./manifest.json?23032523`,
-			`./sw.js?23032523`
+			`./index.html?23032526`,
+			`./main.css?23032526`,
+			`./main.js?23032526`,
+			`./manifest.json?23032526`,
+			`./sw.js?23032526`
 		]).then(() => self.skipWaiting()))
 );
 
