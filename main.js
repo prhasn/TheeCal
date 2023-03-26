@@ -304,7 +304,7 @@ const
                         : localStorage.history = JSON.stringify(history);
                     saveToggle();
                 };
-                bu.copy.onclick = () => navigator.clipboard.writeText(calcEqu.innerText);
+                bu.copy.onclick = () => navigator.clipboard.writeText(calcResult.innerText);
                 bu.back.onclick = () => {
                     if (enabledCheck(bu.back)) {
                         resultsRevert();
@@ -374,17 +374,16 @@ const
                     infoShown ? (
                         hide(appInfo),
                         flex(calcSec),
-                        flex(bu.save),
-                        hide(bu.copy),
                         bu.corner.src = `./img/delete.svg`,
                         bu.corner.onclick = () => {
                             history = [];
                             hUpdate();
-                        }
+                        },
+                        updateUI() // Update UI
                     ) : (
                         hide(calcSec),
-                        hide(bu.save),
-                        hide(bu.copy),
+                        hide(bu.save.parentElement),
+                        hide(bu.copy.parentElement),
                         block(appInfo),
                         hContent.scrollTo(0, 0), // Scroll to top
                         flex(bu.corner.parentElement),
@@ -400,8 +399,6 @@ const
                     bu.info.src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
                     // Change icon description
                     bu.info.title = infoShown ? `Learn more` : `Back to calculator`;
-                    // Update UI
-                    updateUI();
                 };
                 // Buttons listeners
                 document.addEventListener(`keydown`,
@@ -459,7 +456,7 @@ const
         darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032526`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032529`));
     };
 
 // Start TheeCal
