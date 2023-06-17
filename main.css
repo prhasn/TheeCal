@@ -57,18 +57,12 @@ h2 {
 
 button {
     border: none;
-    border-radius: var(--large_radius);
     cursor: pointer;
     padding: 0;
     background-color: var(--light_blue);
     font-size: 32px;
     font-weight: 700;
     outline: none;
-}
-
-button:active {
-    border-radius: var(--small_radius);
-    filter: none !important;
 }
 
 .outline {
@@ -112,7 +106,6 @@ button:active {
     padding: 16px;
     opacity: 0.3;
     width: 100%;
-    cursor: pointer;
 }
 
 .icon_wrap {
@@ -122,6 +115,14 @@ button:active {
     width: 64px;
     height: 64px;
     z-index: 3;
+}
+
+.bu_cover {
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    background-color: var(--clear);
 }
 
 .copy_wrap {
@@ -241,16 +242,26 @@ button:active {
 }
 
 .num_bu {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 56px;
+    z-index: 1;
+    background-color: var(--clear);
 }
 
 .num_bu_wrap {
+    position: relative;
     overflow: hidden;
+    border-radius: var(--large_radius);
+    background-color: var(--light_blue);
+}
+
+.num_bu_wrap:active {
     border-radius: var(--small_radius);
+    filter: none !important;
 }
 
 .num_bu_2 {
@@ -264,6 +275,7 @@ button:active {
 .img_icon {
     width: 48px;
     height: 48px;
+    z-index: 0;
 }
 
 @media only screen and (max-width: 500px) {

@@ -29,15 +29,15 @@ const
             /** Check elements class list */
             classCheck = (/** Element */ e, /** Class */ c) => e.classList.contains(c) ? false : true,
             /** Disable button */
-            disableBu = e => e.classList.add(`shadow_inside`),
+            disableBu = e => e.parentElement.classList.add(`shadow_inside`),
             /** Disable buttons array */
-            disableAll = a => a.forEach(e => e.classList.add(`shadow_inside`)),
+            disableAll = a => a.forEach(e => disableBu(e)),
             /** Enable button */
-            enableBu = e => e.classList.remove(`shadow_inside`),
+            enableBu = e => e.parentElement.classList.remove(`shadow_inside`),
             /** Enable buttons array */
-            enableAll = a => a.forEach(e => e.classList.remove(`shadow_inside`)),
+            enableAll = a => a.forEach(e => enableBu(e)),
             /** Check button enable status */
-            enabledCheck = e => classCheck(e, `shadow_inside`),
+            enabledCheck = e => classCheck(e.parentElement, `shadow_inside`),
             /** Expression buttons */
             expressions = [`÷`, `×`, `-`, `+`],
             /** History list */
@@ -53,13 +53,13 @@ const
             /** Button elements */
             bu = {
                 /** App info button */
-                info: s(`.info_wrap`).children[0],
+                info: s(`.info_wrap`),
                 /** Clear history button */
-                corner: s(`.history_clear`).children[0],
+                corner: s(`.history_clear`),
                 /** Toggle history save status */
-                save: s(`.save_wrap`).children[0],
+                save: s(`.save_wrap`),
                 /** Copy button */
-                copy: s(`.copy_wrap`).children[0],
+                copy: s(`.copy_wrap`),
                 /** Backspace button */
                 back: s(`#bu_back`),
                 /** Clear all button */
@@ -114,8 +114,8 @@ const
             /** Save mode toggle */
             saveToggle = () => {
                 const h = localStorage.history;
-                bu.save.title = `History save: ` + (h ? `on` : `off`);
-                bu.save.src = `./img/` + (h ? `save_on` : `save_off`) + `.svg`;
+                bu.save.children[1].title = `History save: ` + (h ? `on` : `off`);
+                bu.save.children[0].src = `./img/` + (h ? `save_on` : `save_off`) + `.svg`;
             },
             /** Content shadows update */
             hShadow = () => {
@@ -143,12 +143,12 @@ const
                         calcEqu.innerText = i.innerText.split(` = `)[0];
                         updateUI();
                     }),
-                    flex(bu.corner.parentElement),
-                    flex(bu.save.parentElement)
+                    flex(bu.corner),
+                    flex(bu.save)
                 ) : (
                     resultsItems[0].innerText = ``,
-                    hide(bu.corner.parentElement),
-                    hide(bu.save.parentElement)
+                    hide(bu.corner),
+                    hide(bu.save)
                 );
 
                 // Scroll to bottom
@@ -235,10 +235,10 @@ const
                     enableBu(bu.dot);
                 };
                 value == `0` ? (
-                    hide(bu.copy.parentElement),
+                    hide(bu.copy),
                     disableAll([bu.back, bu.clear, bu.equal])
                 ) : (
-                    flex(bu.copy.parentElement),
+                    calcResult.innerText == `0` ? hide(bu.copy) : flex(bu.copy),
                     enableAll([bu.back, bu.clear, bu.equal])
                 );
                 value == `0` || expressions.indexOf(last) > -1 || last == `.` || last == `(` ?
@@ -272,7 +272,7 @@ const
             },
             /** History setup */
             hSetup = () => {
-                bu.corner.onclick = () => {
+                bu.corner.children[1].onclick = () => {
                     history = [];
                     hUpdate();
                 };
@@ -299,12 +299,12 @@ const
             },
             /** Setup buttons */
             buSetup = () => {
-                bu.save.onclick = () => {
+                bu.save.children[1].onclick = () => {
                     localStorage.history ? localStorage.removeItem(`history`)
                         : localStorage.history = JSON.stringify(history);
                     saveToggle();
                 };
-                bu.copy.onclick = () => navigator.clipboard.writeText(calcResult.innerText);
+                bu.copy.children[1].onclick = () => navigator.clipboard.writeText(calcResult.innerText);
                 bu.back.onclick = () => {
                     if (enabledCheck(bu.back)) {
                         resultsRevert();
@@ -324,7 +324,7 @@ const
                 };
                 for (const b in bu.numbers) {
                     const button = bu.numbers[b];
-                    button.onclick = () => enabledCheck(button) && updateUI(button.innerText);
+                    button.onclick = () => enabledCheck(button) && updateUI(button.value);
                 };
                 bu.dot.onclick = () => {
                     if (enabledCheck(bu.dot)) {
@@ -349,7 +349,7 @@ const
                             expressions.indexOf(value[lastNum]) > -1 && (
                                 calcEqu.innerText = value.slice(0, lastNum)
                             );
-                            updateUI(button.innerText);
+                            updateUI(button.value);
                         };
                     };
                 };
@@ -365,7 +365,7 @@ const
                         );
                 };
                 // Info button setup
-                bu.info.onclick = () => {
+                bu.info.children[1].onclick = () => {
                     /** Info hidden status */
                     const infoShown = appInfo.style.display == `block`;
                     // Hide/Show calculation history
@@ -374,31 +374,31 @@ const
                     infoShown ? (
                         hide(appInfo),
                         flex(calcSec),
-                        bu.corner.src = `./img/delete.svg`,
-                        bu.corner.onclick = () => {
+                        bu.corner.children[0].src = `./img/delete.svg`,
+                        bu.corner.children[1].onclick = () => {
                             history = [];
                             hUpdate();
                         },
                         updateUI() // Update UI
                     ) : (
                         hide(calcSec),
-                        hide(bu.save.parentElement),
-                        hide(bu.copy.parentElement),
+                        hide(bu.save),
+                        hide(bu.copy),
                         block(appInfo),
                         hContent.scrollTo(0, 0), // Scroll to top
-                        flex(bu.corner.parentElement),
-                        bu.corner.src = `./img/` + (localStorage.dark ? `light` : `dark`) + `.svg`,
-                        bu.corner.onclick = () => {
+                        flex(bu.corner),
+                        bu.corner.children[0].src = `./img/` + (localStorage.dark ? `light` : `dark`) + `.svg`,
+                        bu.corner.children[1].onclick = () => {
                             const dark = Number(localStorage.dark);
-                            bu.corner.src = `./img/` + (dark ? `dark` : `light`) + `.svg`;
+                            bu.corner.children[0].src = `./img/` + (dark ? `dark` : `light`) + `.svg`;
                             darkMode(dark);
                             localStorage.dark = !dark ? 1 : 0;
                         }
                     );
                     // Change icon
-                    bu.info.src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
+                    bu.info.children[0].src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
                     // Change icon description
-                    bu.info.title = infoShown ? `Learn more` : `Back to calculator`;
+                    bu.info.children[1].title = infoShown ? `Learn more` : `Back to calculator`;
                 };
                 // Buttons listeners
                 document.addEventListener(`keydown`,
@@ -456,7 +456,7 @@ const
         darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032529`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032531`));
     };
 
 // Start TheeCal
