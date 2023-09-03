@@ -213,7 +213,7 @@ const
                     value != `0` && (!equalDone || expressions.indexOf(v) > -1) ? (
                         !equalDone ? resultsRevert()
                             : (
-                                calcEqu.innerText = `(${calcEqu.innerText})`,
+                                calcEqu.innerText = calcResult.innerText,
                                 equalDone = false
                             ),
                         calcEqu.innerText += v
