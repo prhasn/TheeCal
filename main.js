@@ -211,7 +211,11 @@ const
                 let value = calcEqu.innerText;
                 v != undefined && (
                     value != `0` && (!equalDone || expressions.indexOf(v) > -1) ? (
-                        !equalDone ? resultsRevert() : equalDone = false,
+                        !equalDone ? resultsRevert()
+                            : (
+                                calcEqu.innerText = `(${calcEqu.innerText})`,
+                                equalDone = false
+                            ),
                         calcEqu.innerText += v
                     ) : (
                         equalDone = false,
