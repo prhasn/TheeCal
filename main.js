@@ -125,6 +125,7 @@ const
                 const h = localStorage.history;
                 bu.save.children[1].title = `History save: ` + (h ? `on` : `off`);
                 bu.save.children[0].src = `./img/` + (h ? `save_on` : `save_off`) + `.svg`;
+                bu.save.children[0].alt = `Disk icon ${h ? `filled` : `outline`}`;
             },
             /** Content shadows update */
             hShadow = () => {
@@ -376,6 +377,16 @@ const
                         );
                 };
                 // Info button setup
+                const updateCornerIcon = (
+                    del,
+                    dark,
+                    fun
+                ) => {
+                    bu.corner.children[0].src = `./img/${del ? `delete` : dark ? `light` : `dark`}.svg`;
+                    bu.corner.children[0].alt = `${del ? `Bin` : `${dark ? `light` : `dark`} star`} icon`;
+                    bu.corner.children[1].title = del ? `Delete history` : `Switch to ${dark ? `light` : `dark`} mode`;
+                    if (fun) bu.corner.children[1].onclick = fun;
+                };
                 bu.info.children[1].onclick = () => {
                     /** Info hidden status */
                     const infoShown = appInfo.style.display == `block`;
@@ -385,30 +396,30 @@ const
                     infoShown ? (
                         hide(appInfo),
                         flex(calcSec),
-                        bu.corner.children[0].src = `./img/delete.svg`,
-                        bu.corner.children[1].onclick = () => {
+                        updateCornerIcon(true, false, () => {
                             history = [];
                             hUpdate();
-                        },
-                        updateUI() // Update UI
+                        }),
+                        updateUI(), // Update UI
+                        hUpdate()
                     ) : (
                         hide(calcSec),
                         hide(bu.save),
                         hide(bu.copy),
                         block(appInfo),
-                        hContent.scrollTo(0, 0), // Scroll to top
                         flex(bu.corner),
-                        bu.corner.children[0].src = `./img/` + (localStorage.dark ? `light` : `dark`) + `.svg`,
-                        bu.corner.children[1].onclick = () => {
+                        hContent.scrollTo(0, 0), // Scroll to top
+                        updateCornerIcon(false, Number(localStorage.dark), () => {
                             const dark = Number(localStorage.dark);
-                            bu.corner.children[0].src = `./img/` + (dark ? `dark` : `light`) + `.svg`;
                             darkMode(dark);
-                            localStorage.dark = !dark ? 1 : 0;
-                        }
+                            localStorage.dark = dark ? 0 : 1;
+                            updateCornerIcon(false, !dark);
+                        })
                     );
                     // Change icon
                     bu.info.children[0].src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
                     // Change icon description
+                    bu.info.children[0].alt = `${infoShown ? `Information` : `Back`} icon`;
                     bu.info.children[1].title = infoShown ? `Learn more` : `Back to calculator`;
                 };
                 // Buttons listeners
@@ -467,7 +478,7 @@ const
         darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?23032531`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021719`));
     };
 
 // Start TheeCal
