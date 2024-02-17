@@ -298,7 +298,7 @@ const
                 const
                     defaultSet = matchMedia(`(prefers-color-scheme: dark)`),
                     setting = Number(localStorage.dark);
-                return setting != undefined ? (
+                return setting === 1 || setting == 0 ? (
                     defaultSet.onchange = null,
                     setting
                 ) : defaultSet ? (
@@ -492,7 +492,7 @@ const
         darkMode();
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021731`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021732`));
     };
 
 // Start TheeCal
