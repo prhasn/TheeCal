@@ -293,11 +293,9 @@ const
                 localStorage.history && (history = JSON.parse(localStorage.history));
                 hUpdate();
             },
-            /** Dark mode */
-            isDark = () => {
-                const mediaQueryObj = window.matchMedia('(prefers-color-scheme: dark)');
-                return mediaQueryObj.matches;
-            },
+            /** Dark mode check */
+            isDark = () => matchMedia(`(prefers-color-scheme: dark)`)?.matches,
+            /** Dark mode styling */
             darkMode = dark => {
                 const bodyClasses = s(`body`).classList;
                 dark ? bodyClasses.remove(`bg_dark`)
