@@ -294,21 +294,34 @@ const
                 hUpdate();
             },
             /** Dark mode check */
-            isDark = () => matchMedia(`(prefers-color-scheme: dark)`)?.matches,
+            isDark = () => {
+                const
+                    defaultSet = matchMedia(`(prefers-color-scheme: dark)`),
+                    setting = localStorage.dark;
+                return setting != undefined ? (
+                    defaultSet.onchange = null,
+                    setting
+                ) : defaultSet ? (
+                    defaultSet.onchange = () => darkMode(),
+                    defaultSet.matches ? 1 : 0
+                ) : 0;
+            },
             /** Dark mode styling */
-            darkMode = dark => {
-                const bodyClasses = s(`body`).classList;
-                dark ? bodyClasses.remove(`bg_dark`)
-                    : bodyClasses.add(`bg_dark`);
+            darkMode = () => {
+                const
+                    dark = isDark(),
+                    bodyClasses = s(`body`).classList;
+                dark ? bodyClasses.add(`bg_dark`)
+                    : bodyClasses.remove(`bg_dark`)
                 bu.numpad.forEach(b => {
                     const classes = b.classList;
-                    dark ? classes.remove(`t_white`)
-                        : classes.add(`t_white`);
+                    dark ? classes.add(`t_white`)
+                        : classes.remove(`t_white`);
                 });
                 bu.icons.forEach(b => {
                     const classes = b.classList;
-                    dark ? classes.remove(`dark`)
-                        : classes.add(`dark`);
+                    dark ? classes.add(`dark`)
+                        : classes.remove(`dark`);
                 });
             },
             /** Setup buttons */
@@ -381,9 +394,9 @@ const
                 // Info button setup
                 const updateCornerIcon = (
                     del,
-                    dark,
                     fun
                 ) => {
+                    const dark = isDark();
                     bu.corner.children[0].src = `./img/${del ? `delete` : dark ? `light` : `dark`}.svg`;
                     bu.corner.children[0].alt = `${del ? `Bin` : `${dark ? `light` : `dark`} star`} icon`;
                     bu.corner.children[1].title = del ? `Delete history` : `Switch to ${dark ? `light` : `dark`} mode`;
@@ -398,7 +411,7 @@ const
                     infoShown ? (
                         hide(appInfo),
                         flex(calcSec),
-                        updateCornerIcon(true, false, () => {
+                        updateCornerIcon(true, () => {
                             history = [];
                             hUpdate();
                         }),
@@ -411,11 +424,10 @@ const
                         block(appInfo),
                         flex(bu.corner),
                         hContent.scrollTo(0, 0), // Scroll to top
-                        updateCornerIcon(false, Number(localStorage.dark), () => {
-                            const dark = Number(localStorage.dark);
-                            darkMode(dark);
-                            localStorage.dark = dark ? 0 : 1;
-                            updateCornerIcon(false, !dark);
+                        updateCornerIcon(false, () => {
+                            localStorage.dark = isDark() ? 0 : 1;
+                            darkMode();
+                            updateCornerIcon(false);
                         })
                     );
                     // Change icon
@@ -473,17 +485,14 @@ const
                 );
             };
 
-        if (!localStorage.dark)
-            localStorage.dark = isDark() ? 1 : 0;
-
         // Setup everything
         buSetup();
         hSetup();
         updateUI();
-        darkMode(!Number(localStorage.dark));
+        darkMode();
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021721`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021732`));
     };
 
 // Start TheeCal
