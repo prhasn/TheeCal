@@ -294,6 +294,10 @@ const
                 hUpdate();
             },
             /** Dark mode */
+            isDark = () => {
+                const mediaQueryObj = window.matchMedia('(prefers-color-scheme: dark)');
+                return mediaQueryObj.matches;
+            },
             darkMode = dark => {
                 const bodyClasses = s(`body`).classList;
                 dark ? bodyClasses.remove(`bg_dark`)
@@ -471,6 +475,9 @@ const
                 );
             };
 
+        if (!localStorage.dark)
+            localStorage.dark = isDark() ? 1 : 0;
+
         // Setup everything
         buSetup();
         hSetup();
@@ -478,7 +485,7 @@ const
         darkMode(!Number(localStorage.dark));
 
         // Service worker registration
-        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021719`));
+        navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021721`));
     };
 
 // Start TheeCal
