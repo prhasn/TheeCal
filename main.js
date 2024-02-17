@@ -38,6 +38,15 @@ const
             enableAll = a => a.forEach(e => enableBu(e)),
             /** Check button enable status */
             enabledCheck = e => classCheck(e.parentElement, `shadow_inside`),
+            /** Comma addition */
+            commaNum = (num) => {
+                if (isNaN(num)) return num
+                const numSplit = (num + ``).split(".");
+                numSplit[0] = numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                return numSplit.join(".");
+            },
+            /** Comma removal */
+            commaNone = (calcString) => calcString.replaceAll(`,`, ``),
             /** Expression buttons */
             expressions = [`÷`, `×`, `-`, `+`],
             /** History list */
@@ -170,7 +179,7 @@ const
                 (value.match(/[)]/g) || []).length,
             /** Clear results */
             resultsRevert = () => equalDone && (
-                calcEqu.innerText = calcResult.innerText.split(` =`)[0],
+                calcEqu.innerText = commaNone(calcResult.innerText).split(` =`)[0],
                 calcResult.innerText = ``,
                 equalDone = false
             ),
@@ -178,7 +187,7 @@ const
             liveResults = () => {
 
                 /** Input value */
-                const equation = calcEqu.innerText;
+                const equation = commaNone(calcEqu.innerText);
 
                 // Sanitise input
                 for (let i = 0; i < equation.length; i++)
@@ -192,15 +201,13 @@ const
                      * window.eval[0](calc)
                      * [eval][0](calc)
                      */
-                    const final = Number(
-                        [eval][0](
-                            equation
-                                .replaceAll(/\×/g, `*`)
-                                .replaceAll(/\÷/g, `/`)
-                                .replaceAll(/\%/g, `*0.01`)
-                        )
-                    );
-                    (final || final == 0) && (calcResult.innerText = final);
+                    const
+                        filter = equation
+                            .replaceAll(/\×/g, `*`)
+                            .replaceAll(/\÷/g, `/`)
+                            .replaceAll(/\%/g, `*0.01`),
+                        final = Number([eval][0](filter));
+                    (final || final == 0) && (calcResult.innerText = commaNum(final));
                     return { equation, final }
                 } catch { return {}; };
             },
@@ -208,7 +215,7 @@ const
             updateUI = v => {
 
                 // analyse value
-                let value = calcEqu.innerText;
+                let value = commaNone(calcEqu.innerText);
                 v != undefined && (
                     value != `0` && (!equalDone || expressions.indexOf(v) > -1) ? (
                         !equalDone ? resultsRevert()
@@ -224,7 +231,7 @@ const
                     )
                 );
                 value == `` && (calcEqu.innerText = `0`);
-                value = calcEqu.innerText;
+                value = commaNone(calcEqu.innerText);
 
                 // enable/disable buttons
                 const
@@ -308,11 +315,11 @@ const
                         : localStorage.history = JSON.stringify(history);
                     saveToggle();
                 };
-                bu.copy.children[1].onclick = () => navigator.clipboard.writeText(calcResult.innerText);
+                bu.copy.children[1].onclick = () => navigator.clipboard.writeText(commaNone(calcResult.innerText));
                 bu.back.onclick = () => {
                     if (enabledCheck(bu.back)) {
                         resultsRevert();
-                        const value = calcEqu.innerText;
+                        const value = commaNone(calcEqu.innerText);
                         value != `0` && (calcEqu.innerText = value.slice(0, value.length - 1));
                         updateUI();
                     };
@@ -320,7 +327,7 @@ const
                 bu.clear.onclick = () => enabledCheck(bu.clear) && clearAll();
                 bu.brackets.onclick = () => {
                     if (enabledCheck(bu.brackets)) {
-                        const value = calcEqu.innerText;
+                        const value = commaNone(calcEqu.innerText);
                         value == `0` ? calcEqu.innerText = `(`
                             : calcEqu.innerText += bracketOpen(value) ? `)` : `(`;
                         updateUI();
@@ -364,7 +371,7 @@ const
                         && (results.final || results.final == 0)
                         && (
                             equalDone = true,
-                            history.push(results.equation + ` = ` + results.final),
+                            history.push(results.equation + ` = ` + commaNum(results.final)),
                             hUpdate()
                         );
                 };
