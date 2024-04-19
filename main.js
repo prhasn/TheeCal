@@ -16,6 +16,8 @@ const
             resultsItems;
 
         const
+            /** Vibrate */
+            vibrate = () => navigator?.vibrate?.(25),
             /** Select element */
             s = c => document.querySelector(c),
             /** Select element array */
@@ -152,6 +154,7 @@ const
                         calcResult.innerText = ``;
                         calcEqu.innerText = i.innerText.split(` = `)[0];
                         updateUI();
+                        vibrate();
                     }),
                     flex(bu.corner),
                     flex(bu.save)
@@ -287,6 +290,7 @@ const
                 bu.corner.children[1].onclick = () => {
                     history = [];
                     hUpdate();
+                    vibrate();
                 };
                 hContent.onscroll = () => hShadow();
                 resultsItems = sA(`.history_result`);
@@ -330,28 +334,44 @@ const
                     localStorage.history ? localStorage.removeItem(`history`)
                         : localStorage.history = JSON.stringify(history);
                     saveToggle();
+                    vibrate();
                 };
-                bu.copy.children[1].onclick = () => navigator.clipboard.writeText(commaNone(calcResult.innerText));
+                bu.copy.children[1].onclick = () => {
+                    navigator.clipboard.writeText(commaNone(calcResult.innerText));
+                    vibrate();
+                };
                 bu.back.onclick = () => {
                     if (enabledCheck(bu.back)) {
                         resultsRevert();
                         const value = commaNone(calcEqu.innerText);
                         value != `0` && (calcEqu.innerText = value.slice(0, value.length - 1));
                         updateUI();
+                        vibrate();
                     };
                 };
-                bu.clear.onclick = () => enabledCheck(bu.clear) && clearAll();
+                bu.clear.onclick = () => {
+                    if (enabledCheck(bu.clear)) {
+                        clearAll();
+                        vibrate();
+                    };
+                };
                 bu.brackets.onclick = () => {
                     if (enabledCheck(bu.brackets)) {
                         const value = commaNone(calcEqu.innerText);
                         value == `0` ? calcEqu.innerText = `(`
                             : calcEqu.innerText += bracketOpen(value) ? `)` : `(`;
                         updateUI();
+                        vibrate();
                     };
                 };
                 for (const b in bu.numbers) {
                     const button = bu.numbers[b];
-                    button.onclick = () => enabledCheck(button) && updateUI(button.value);
+                    button.onclick = () => {
+                        if (enabledCheck(button)) {
+                            updateUI(button.value);
+                            vibrate();
+                        };
+                    }
                 };
                 bu.dot.onclick = () => {
                     if (enabledCheck(bu.dot)) {
@@ -363,6 +383,7 @@ const
                             else if (expressions.indexOf(v) > -1 || v == `%`) break
                         };
                         updateUI(`.`);
+                        vibrate();
                     };
                 };
                 // Expression buttons initial setup
@@ -377,19 +398,22 @@ const
                                 calcEqu.innerText = value.slice(0, lastNum)
                             );
                             updateUI(button.value);
+                            vibrate();
                         };
                     };
                 };
                 // Equal button setup
                 bu.equal.onclick = () => {
                     const results = liveResults();
-                    enabledCheck(bu.equal)
+                    if (
+                        enabledCheck(bu.equal)
                         && (results.final || results.final == 0)
-                        && (
-                            equalDone = true,
-                            history.push(results.equation + ` = ` + commaNum(results.final)),
-                            hUpdate()
-                        );
+                    ) {
+                        equalDone = true;
+                        history.push(results.equation + ` = ` + commaNum(results.final));
+                        hUpdate();
+                        vibrate();
+                    };
                 };
                 // Info button setup
                 const updateCornerIcon = (
@@ -435,6 +459,8 @@ const
                     // Change icon description
                     bu.info.children[0].alt = `${infoShown ? `Information` : `Back`} icon`;
                     bu.info.children[1].title = infoShown ? `Learn more` : `Back to calculator`;
+                    // vibrate
+                    vibrate();
                 };
                 // Buttons listeners
                 document.addEventListener(`keydown`,
