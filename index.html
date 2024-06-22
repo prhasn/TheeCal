@@ -8,7 +8,7 @@
     <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     style-src 'self' 'unsafe-inline';
-    script-src 'self' blob: 'unsafe-eval' filesystem: 'unsafe-eval';
+    script-src 'self' blob: 'unsafe-inline' filesystem: 'unsafe-inline';
     ">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8;">
     <meta name="referrer" content="origin">
@@ -59,11 +59,362 @@
     <meta property="og:url" content="https://theecal.com/">
     <link href="./img/cover.jpg" rel="image_src">
     <link rel="canonical" href="https://theecal.com/">
-    <link rel="manifest" href="./manifest.json?23032531">
+    <link rel="manifest" href="./manifest.json?24062201">
     <title>Thee Calculator | for everyday needs</title>
-    <link rel="stylesheet" href="./main.css?23032531">
-    <script defer="" type="text/javascript" src="./main.js?24041901"></script>
 </head>
+
+<style>
+    /* Copyright © 2023-present TheeCalculator, All rights reserved. */
+
+    :root {
+        --clear: transparent;
+        --white: white;
+        --black: black;
+        --dark: #141414;
+        --light_blue: #43caff1a;
+        --sea_blue: #529cbd;
+        --light_green: #9dffa22e;
+        --light_red: #ffbabb61;
+        --light_grey: #f1f1f1;
+        --grey: #c1c1c1;
+        --shadow: #00000033;
+        --max_width: 600px;
+        --large_radius: 32px;
+        --small_radius: 17px;
+    }
+
+    html {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 32px;
+        color: var(--black);
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 100vw;
+        margin: 0;
+        transition: 0.5s ease-in-out;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    a {
+        color: black;
+    }
+
+    h1,
+    h2 {
+        margin: 0;
+        font-weight: 700;
+        margin-bottom: 14px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    button {
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        background-color: var(--light_blue);
+        font-size: 32px;
+        font-weight: 700;
+        outline: none;
+    }
+
+    .outline {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        width: 90vw;
+        padding: 30px 0;
+        height: calc(100vh - 60px);
+        min-height: 560px;
+        margin: 0;
+    }
+
+    .display_area {
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        height: 100%;
+        max-height: 100%;
+        min-height: 200px;
+        width: 100%;
+        margin-bottom: 8px;
+        border-radius: var(--large_radius);
+        max-width: var(--max_width);
+        background-color: var(--light_grey);
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+        margin: 5px 0;
+    }
+
+    .icon_bu {
+        width: 32px;
+        height: 32px;
+        padding: 16px;
+        opacity: 0.3;
+        width: 100%;
+    }
+
+    .icon_wrap {
+        display: none;
+        overflow: hidden;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        z-index: 3;
+    }
+
+    .bu_cover {
+        position: absolute;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        background-color: var(--clear);
+    }
+
+    .copy_wrap {
+        bottom: 0;
+        right: 0;
+    }
+
+    .save_wrap {
+        bottom: 160px;
+        right: 0;
+    }
+
+    .info_wrap {
+        display: flex;
+        top: 0;
+        left: 0;
+    }
+
+    .app_info {
+        display: none;
+        padding: 0 24px 40px 24px;
+        font-size: 16px;
+    }
+
+    .info_txt {
+        margin-bottom: 14px;
+        font-weight: 300;
+    }
+
+    .history_clear {
+        top: 0;
+        right: 0;
+    }
+
+    .history_content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        width: 100%;
+        max-height: 100%;
+        margin-top: 56px;
+        box-shadow: inset 0px -8px 8px -8px var(--shadow);
+    }
+
+    .history_content::-webkit-scrollbar {
+        width: 10px;
+        background-color: var(--clear);
+    }
+
+    .history_content::-webkit-scrollbar-thumb {
+        background-color: var(--grey);
+    }
+
+    .history_content::-webkit-scrollbar-track {
+        background-color: var(--clear);
+    }
+
+    .history_result {
+        width: 100%;
+        max-width: 100%;
+        height: 100%;
+        min-height: 50px;
+        font-size: 24px;
+        font-weight: 300;
+        padding: 0 56px 0 24px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: left;
+        border-radius: 0;
+        background-color: var(--clear);
+        cursor: pointer;
+    }
+
+    .calc_section {
+        display: flex;
+        align-items: flex-end;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: right;
+        min-height: 160px;
+        width: 100%;
+        z-index: 0;
+    }
+
+    .calc_equation {
+        font-size: 10vh;
+        font-weight: 700;
+        width: calc(100% - 20px);
+        text-align: left;
+        padding: 0 10px;
+        height: 80px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .calc_result {
+        font-size: 40px;
+        width: 100%;
+        max-width: calc(100% - 85px);
+        margin: 0 65px 5px 20px;
+        background-color: var(--clear);
+        border: none;
+        text-align: right;
+        outline: none;
+        overflow: hidden;
+    }
+
+    .grid_bu {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 8px;
+        row-gap: 8px;
+        width: 100%;
+        max-width: var(--max_width);
+    }
+
+    .num_bu {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 56px;
+        z-index: 1;
+        background-color: var(--clear);
+    }
+
+    .num_bu_wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--large_radius);
+        background-color: var(--light_blue);
+    }
+
+    .num_bu_wrap:active {
+        border-radius: var(--small_radius);
+        filter: none !important;
+    }
+
+    .num_bu_2 {
+        grid-column: span 2;
+    }
+
+    .num_bu_4 {
+        grid-column: span 4;
+    }
+
+    .img_icon {
+        width: 48px;
+        height: 48px;
+        z-index: 0;
+    }
+
+    @media only screen and (max-width: 500px) {
+        .img_icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .num_bu {
+            height: 40px;
+        }
+    }
+
+    .margin_top_2 {
+        margin-top: 2vw;
+    }
+
+    /* General */
+    .expand {
+        width: 100%;
+    }
+
+    /* Colours */
+    .bg_l_red {
+        background-color: var(--light_red);
+    }
+
+    .bg_blue {
+        background-color: var(--sea_blue);
+    }
+
+    .bg_l_green {
+        background-color: var(--light_green);
+    }
+
+    .bg_l_grey {
+        background-color: var(--light_grey);
+    }
+
+    .bg_grey {
+        background-color: var(--grey);
+    }
+
+    .bg_dark {
+        background-color: var(--dark);
+    }
+
+    .t_white {
+        color: var(--white);
+    }
+
+    .t_black {
+        color: var(--black);
+    }
+
+    .shadow_top_bottom {
+        box-shadow:
+            inset 0px 8px 8px -8px var(--shadow),
+            inset 0px -8px 8px -8px var(--shadow);
+    }
+
+    .shadow_inside {
+        box-shadow: inset 0 0 4px var(--shadow);
+    }
+
+    .bold {
+        font-weight: 700;
+    }
+
+    .dark {
+        filter: invert(1);
+    }
+</style>
 
 <body>
     <div class="outline">
@@ -114,10 +465,11 @@
                             Cloudflare's privacy policy here
                         </a>
                     </p>
+                    <hr>
+                    <p class="info_txt">version 1.1</p>
                     <p class="info_txt" style="font-weight: 500;">
                         TheeCal™ and TheeCalculator™ are trademarks of Thee Calculator.
-                        Copyright © 2023 - present Thee Calculator.
-                        <br>All rights reserved.
+                        Copyright © 2023 - present Thee Calculator. All rights reserved.
                     </p>
                 </div>
                 <button class="history_result" title="Previous equation"></button>
@@ -216,5 +568,533 @@
         </div>
     </div>
 </body>
+
+<script>
+    /* Copyright © 2023-present TheeCalculator (TheeCal), All rights reserved.
+    @preserve */
+
+    "use-strict"
+
+    const
+        /** TheeCalculator initiation */
+        start = () => {
+
+            let
+                /** Equation done */
+                equalDone = false,
+                /** History record array */
+                history = [],
+                /** History display entries */
+                resultsItems;
+
+            const
+                /** Vibrate */
+                vibrate = () => navigator?.vibrate?.(25),
+                /** Select element */
+                s = c => document.querySelector(c),
+                /** Select element array */
+                sA = c => document.querySelectorAll(c),
+                /** Flex display */
+                flex = e => e.style.display = `flex`,
+                /** Block display */
+                block = e => e.style.display = `block`,
+                /** Hide elements */
+                hide = e => e.style.display = `none`,
+                /** Check elements class list */
+                classCheck = (/** Element */ e, /** Class */ c) => e.classList.contains(c) ? false : true,
+                /** Disable button */
+                disableBu = e => e.parentElement.classList.add(`shadow_inside`),
+                /** Disable buttons array */
+                disableAll = a => a.forEach(e => disableBu(e)),
+                /** Enable button */
+                enableBu = e => e.parentElement.classList.remove(`shadow_inside`),
+                /** Enable buttons array */
+                enableAll = a => a.forEach(e => enableBu(e)),
+                /** Check button enable status */
+                enabledCheck = e => classCheck(e.parentElement, `shadow_inside`),
+                /** Comma addition */
+                commaNum = (num) => {
+                    if (isNaN(num)) return num
+                    const numSplit = (num + ``).split(".");
+                    numSplit[0] = numSplit[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    return numSplit.join(".");
+                },
+                /** Comma removal */
+                commaNone = (calcString) => calcString.replaceAll(`,`, ``),
+                /** Expression buttons */
+                expressions = [`÷`, `×`, `-`, `+`],
+                /** History list */
+                hContent = s(`.history_content`),
+                /** App info */
+                appInfo = s(`.app_info`),
+                /** Calculator input section */
+                calcSec = s(`.calc_section`),
+                /** Main input display */
+                calcEqu = s(`.calc_equation`),
+                /** Results display */
+                calcResult = s(`.calc_result`),
+                /** Button elements */
+                bu = {
+                    /** App info button */
+                    info: s(`.info_wrap`),
+                    /** Clear history button */
+                    corner: s(`.history_clear`),
+                    /** Toggle history save status */
+                    save: s(`.save_wrap`),
+                    /** Copy button */
+                    copy: s(`.copy_wrap`),
+                    /** Backspace button */
+                    back: s(`#bu_back`),
+                    /** Clear all button */
+                    clear: s(`#bu_clear`),
+                    /** Brackets button */
+                    brackets: s(`#bu_brackets`),
+                    /** Dot button */
+                    dot: s(`#bu_dot`),
+                    /** Numpad buttons */
+                    numpad: sA(`.num_bu`),
+                    /** Numpad icons */
+                    icons: sA(`.img_icon`),
+                    /** Numbers buttons object */
+                    numbers: {
+                        /** Number button 9 */
+                        bu9: s(`#bu_9`),
+                        /** Number button 8 */
+                        bu8: s(`#bu_8`),
+                        /** Number button 7 */
+                        bu7: s(`#bu_7`),
+                        /** Number button 6 */
+                        bu6: s(`#bu_6`),
+                        /** Number button 5 */
+                        bu5: s(`#bu_5`),
+                        /** Number button 4 */
+                        bu4: s(`#bu_4`),
+                        /** Number button 3 */
+                        bu3: s(`#bu_3`),
+                        /** Number button 2 */
+                        bu2: s(`#bu_2`),
+                        /** Number button 1 */
+                        bu1: s(`#bu_1`),
+                        /** Number button 0 */
+                        bu0: s(`#bu_0`),
+                        /** Percentage Button */
+                        buPer: s(`#bu_percentage`),
+                    },
+                    /** Expression buttons */
+                    exp: {
+                        /** Divide button */
+                        buDivide: s(`#bu_divide`),
+                        /** Multiply button */
+                        buMultiply: s(`#bu_multiply`),
+                        /** Minus button */
+                        buMinus: s(`#bu_minus`),
+                        /** Plus button */
+                        buPlus: s(`#bu_plus`),
+                    },
+                    /** Equal button */
+                    equal: s(`#bu_equal`)
+                },
+                /** Save mode toggle */
+                saveToggle = () => {
+                    const h = localStorage.history;
+                    bu.save.children[1].title = `History save: ` + (h ? `on` : `off`);
+                    bu.save.children[0].src = `./img/` + (h ? `save_on` : `save_off`) + `.svg`;
+                    bu.save.children[0].alt = `Disk icon ${h ? `filled` : `outline`}`;
+                },
+                /** Content shadows update */
+                hShadow = () => {
+                    const
+                        h = hContent.scrollTop,
+                        l = hContent.classList;
+                    !h || h > (hContent.scrollHeight - hContent.clientHeight) ?
+                        l.remove(`shadow_top_bottom`) : l.add(`shadow_top_bottom`)
+                },
+                /** History general update */
+                hUpdate = () => {
+                    const
+                        l = resultsItems.length,
+                        t = history.length;
+                    if (t > l) for (let i = l; i < t; i++)
+                        hContent.appendChild(resultsItems[0].cloneNode(1));
+                    else if (t < l) for (let i = (t || 1); i < l; i++)
+                        resultsItems[i].remove();
+                    resultsItems = sA(`.history_result`);
+                    for (let i = 0; i < history.length; i++)
+                        resultsItems[i].innerText = history[i];
+                    history.length ? (
+                        resultsItems.forEach(i => i.onclick = () => {
+                            calcResult.innerText = ``;
+                            calcEqu.innerText = i.innerText.split(` = `)[0];
+                            updateUI();
+                            vibrate();
+                        }),
+                        flex(bu.corner),
+                        flex(bu.save)
+                    ) : (
+                        resultsItems[0].innerText = ``,
+                        hide(bu.corner),
+                        hide(bu.save)
+                    );
+
+                    // Scroll to bottom
+                    hContent.scrollTo(0, hContent.scrollHeight);
+
+                    // Update scroll shadows
+                    hShadow();
+                    saveToggle();
+                    localStorage.history && (localStorage.history = JSON.stringify(history));
+                },
+                /** Clear all inputs */
+                clearAll = () => {
+                    calcEqu.innerText = `0`;
+                    calcResult.innerText = ``;
+                    updateUI();
+                },
+                /** Brackets opened */
+                bracketOpen = value => (value.match(/[(]/g) || []).length >
+                    (value.match(/[)]/g) || []).length,
+                /** Clear results */
+                resultsRevert = () => equalDone && (
+                    calcEqu.innerText = commaNone(calcResult.innerText).split(` =`)[0],
+                    calcResult.innerText = ``,
+                    equalDone = false
+                ),
+                /** Live results calculation */
+                liveResults = () => {
+
+                    /** Input value */
+                    const equation = commaNone(calcEqu.innerText);
+
+                    // Sanitise input
+                    for (let i = 0; i < equation.length; i++)
+                        if (!equation[i].match(/\d|\+|\-|\÷|\×|\%|\(|\)|\./g)) return
+
+                    // Evaluate input
+                    try {
+                        /**
+                         * Eval options:
+                         * new Function("return " + calc)()
+                         * window.eval[0](calc)
+                         * [eval][0](calc)
+                         */
+                        const
+                            filter = equation
+                                .replaceAll(/\×/g, `*`)
+                                .replaceAll(/\÷/g, `/`)
+                                .replaceAll(/\%/g, `*0.01`),
+                            final = Number([eval][0](filter));
+                        (final || final == 0) && (calcResult.innerText = commaNum(final));
+                        return { equation, final }
+                    } catch { return {}; };
+                },
+                /** Update all buttons status */
+                updateUI = v => {
+
+                    // analyse value
+                    let value = commaNone(calcEqu.innerText);
+                    v != undefined && (
+                        value != `0` && (!equalDone || expressions.indexOf(v) > -1) ? (
+                            !equalDone ? resultsRevert()
+                                : (
+                                    calcEqu.innerText = calcResult.innerText,
+                                    equalDone = false
+                                ),
+                            calcEqu.innerText += v
+                        ) : (
+                            equalDone = false,
+                            calcResult.innerText = ``,
+                            calcEqu.innerText = v
+                        )
+                    );
+                    value == `` && (calcEqu.innerText = `0`);
+                    value = commaNone(calcEqu.innerText);
+
+                    // enable/disable buttons
+                    const
+                        length = value.length,
+                        last = value[length - 1],
+                        ratio = calcEqu.clientWidth / length;
+                    if (last == `%` || last == `)`) { // Disable numbers pad                    
+                        for (const b in bu.numbers) disableBu(bu.numbers[b]);
+                        disableBu(bu.dot);
+                    } else { // Enable numbers pad
+                        for (const b in bu.numbers) enableBu(bu.numbers[b]);
+                        enableBu(bu.dot);
+                    };
+                    value == `0` ? (
+                        hide(bu.copy),
+                        disableAll([bu.back, bu.clear, bu.equal])
+                    ) : (
+                        calcResult.innerText == `0` ? hide(bu.copy) : flex(bu.copy),
+                        enableAll([bu.back, bu.clear, bu.equal])
+                    );
+                    value == `0` || expressions.indexOf(last) > -1 || last == `.` || last == `(` ?
+                        disableBu(bu.equal) : enableBu(bu.equal);
+
+                    // check numbers
+                    if (Number(last) || last == `%` || value == `0`) {
+                        if (value == `0`) {
+                            disableBu(bu.numbers.buPer);
+                            for (const e in bu.exp) disableBu(bu.exp[e]);
+                        } else {
+                            enableBu(bu.numbers.buPer);
+                            for (const e in bu.exp) enableBu(bu.exp[e]);
+                        };
+                        bracketOpen(value) || value == `0` ? enableBu(bu.brackets) : disableBu(bu.brackets);
+                    } else {
+                        disableBu(bu.numbers.buPer);
+                        bracketOpen(value) ? disableBu(bu.brackets) : enableBu(bu.brackets);
+                    };
+
+                    // Update font size
+                    calcEqu.style.fontSize = (
+                        ratio > 60 ? 100
+                            : ratio > 45 ? 80
+                                : ratio > 30 ? 60
+                                    : 20
+                    ) + `px`;
+
+                    // Live results
+                    liveResults();
+                },
+                /** History setup */
+                hSetup = () => {
+                    bu.corner.children[1].onclick = () => {
+                        history = [];
+                        hUpdate();
+                        vibrate();
+                    };
+                    hContent.onscroll = () => hShadow();
+                    resultsItems = sA(`.history_result`);
+                    localStorage.history && (history = JSON.parse(localStorage.history));
+                    hUpdate();
+                },
+                /** Dark mode check */
+                isDark = () => {
+                    const
+                        defaultSet = matchMedia(`(prefers-color-scheme: dark)`),
+                        setting = Number(localStorage.dark);
+                    return setting === 1 || setting == 0 ? (
+                        defaultSet.onchange = null,
+                        setting
+                    ) : defaultSet ? (
+                        defaultSet.onchange = () => darkMode(),
+                        defaultSet.matches ? 1 : 0
+                    ) : 0;
+                },
+                /** Dark mode styling */
+                darkMode = () => {
+                    const
+                        dark = isDark(),
+                        bodyClasses = s(`body`).classList;
+                    dark ? bodyClasses.add(`bg_dark`)
+                        : bodyClasses.remove(`bg_dark`)
+                    bu.numpad.forEach(b => {
+                        const classes = b.classList;
+                        dark ? classes.add(`t_white`)
+                            : classes.remove(`t_white`);
+                    });
+                    bu.icons.forEach(b => {
+                        const classes = b.classList;
+                        dark ? classes.add(`dark`)
+                            : classes.remove(`dark`);
+                    });
+                },
+                /** Setup buttons */
+                buSetup = () => {
+                    bu.save.children[1].onclick = () => {
+                        localStorage.history ? localStorage.removeItem(`history`)
+                            : localStorage.history = JSON.stringify(history);
+                        saveToggle();
+                        vibrate();
+                    };
+                    bu.copy.children[1].onclick = () => {
+                        navigator.clipboard.writeText(commaNone(calcResult.innerText));
+                        vibrate();
+                    };
+                    bu.back.onclick = () => {
+                        if (enabledCheck(bu.back)) {
+                            resultsRevert();
+                            const value = commaNone(calcEqu.innerText);
+                            value != `0` && (calcEqu.innerText = value.slice(0, value.length - 1));
+                            updateUI();
+                            vibrate();
+                        };
+                    };
+                    bu.clear.onclick = () => {
+                        if (enabledCheck(bu.clear)) {
+                            clearAll();
+                            vibrate();
+                        };
+                    };
+                    bu.brackets.onclick = () => {
+                        if (enabledCheck(bu.brackets)) {
+                            const value = commaNone(calcEqu.innerText);
+                            value == `0` ? calcEqu.innerText = `(`
+                                : calcEqu.innerText += bracketOpen(value) ? `)` : `(`;
+                            updateUI();
+                            vibrate();
+                        };
+                    };
+                    for (const b in bu.numbers) {
+                        const button = bu.numbers[b];
+                        button.onclick = () => {
+                            if (enabledCheck(button)) {
+                                updateUI(button.value);
+                                vibrate();
+                            };
+                        }
+                    };
+                    bu.dot.onclick = () => {
+                        if (enabledCheck(bu.dot)) {
+                            const value = calcEqu.innerText;
+                            for (let i = value.length - 1; i > -1; i--) {
+                                const v = value[i];
+                                if (equalDone) break
+                                else if (v.match(/\./g)) return
+                                else if (expressions.indexOf(v) > -1 || v == `%`) break
+                            };
+                            updateUI(`.`);
+                            vibrate();
+                        };
+                    };
+                    // Expression buttons initial setup
+                    for (const b in bu.exp) {
+                        const button = bu.exp[b];
+                        button.onclick = () => {
+                            if (enabledCheck(button)) {
+                                const
+                                    value = calcEqu.innerText,
+                                    lastNum = value.length - 1;
+                                expressions.indexOf(value[lastNum]) > -1 && (
+                                    calcEqu.innerText = value.slice(0, lastNum)
+                                );
+                                updateUI(button.value);
+                                vibrate();
+                            };
+                        };
+                    };
+                    // Equal button setup
+                    bu.equal.onclick = () => {
+                        const results = liveResults();
+                        if (
+                            enabledCheck(bu.equal)
+                            && (results.final || results.final == 0)
+                        ) {
+                            equalDone = true;
+                            history.push(results.equation + ` = ` + commaNum(results.final));
+                            hUpdate();
+                            vibrate();
+                        };
+                    };
+                    // Info button setup
+                    const updateCornerIcon = (
+                        del,
+                        fun
+                    ) => {
+                        const dark = isDark();
+                        bu.corner.children[0].src = `./img/${del ? `delete` : dark ? `light` : `dark`}.svg`;
+                        bu.corner.children[0].alt = `${del ? `Bin` : `${dark ? `light` : `dark`} star`} icon`;
+                        bu.corner.children[1].title = del ? `Delete history` : `Switch to ${dark ? `light` : `dark`} mode`;
+                        if (fun) bu.corner.children[1].onclick = fun;
+                    };
+                    bu.info.children[1].onclick = () => {
+                        /** Info hidden status */
+                        const infoShown = appInfo.style.display == `block`;
+                        // Hide/Show calculation history
+                        resultsItems.forEach(e => infoShown ? block(e) : hide(e));
+                        // Show info, hide calculator
+                        infoShown ? (
+                            hide(appInfo),
+                            flex(calcSec),
+                            updateCornerIcon(true, () => {
+                                history = [];
+                                hUpdate();
+                            }),
+                            updateUI(), // Update UI
+                            hUpdate()
+                        ) : (
+                            hide(calcSec),
+                            hide(bu.save),
+                            hide(bu.copy),
+                            block(appInfo),
+                            flex(bu.corner),
+                            hContent.scrollTo(0, 0), // Scroll to top
+                            updateCornerIcon(false, () => {
+                                localStorage.dark = isDark() ? 0 : 1;
+                                darkMode();
+                                updateCornerIcon(false);
+                            })
+                        );
+                        // Change icon
+                        bu.info.children[0].src = `./img/` + (infoShown ? `info` : `back`) + `.svg`;
+                        // Change icon description
+                        bu.info.children[0].alt = `${infoShown ? `Information` : `Back`} icon`;
+                        bu.info.children[1].title = infoShown ? `Learn more` : `Back to calculator`;
+                        // vibrate
+                        vibrate();
+                    };
+                    // Buttons listeners
+                    document.addEventListener(`keydown`,
+                        e => {
+                            const k = e.key;
+                            k == `Enter` ? (
+                                bu.equal.click()
+                            ) : k == `Escape` ? (
+                                bu.clear.click()
+                            ) : k == `Backspace` ? (
+                                bu.back.click()
+                            ) : k == `9` ? (
+                                bu.numbers.bu9.click()
+                            ) : k == `8` ? (
+                                bu.numbers.bu8.click()
+                            ) : k == `7` ? (
+                                bu.numbers.bu7.click()
+                            ) : k == `6` ? (
+                                bu.numbers.bu6.click()
+                            ) : k == `5` ? (
+                                bu.numbers.bu5.click()
+                            ) : k == `4` ? (
+                                bu.numbers.bu4.click()
+                            ) : k == `3` ? (
+                                bu.numbers.bu3.click()
+                            ) : k == `2` ? (
+                                bu.numbers.bu2.click()
+                            ) : k == `1` ? (
+                                bu.numbers.bu1.click()
+                            ) : k == `0` ? (
+                                bu.numbers.bu0.click()
+                            ) : k == `.` ? (
+                                bu.dot.click()
+                            ) : k == `%` ? (
+                                bu.numbers.buPer.click()
+                            ) : k == `-` ? (
+                                bu.exp.buMinus.click()
+                            ) : k == `+` ? (
+                                bu.exp.buPlus.click()
+                            ) : k == `*` ? (
+                                bu.exp.buMultiply.click()
+                            ) : k == `/` ? (
+                                bu.exp.buDivide.click()
+                            ) : k == `(` || k == `)` ? (
+                                bu.brackets.click()
+                            ) : 0;
+                        }
+                    );
+                };
+
+            // Setup everything
+            buSetup();
+            hSetup();
+            updateUI();
+            darkMode();
+
+            // Service worker registration
+            navigator.serviceWorker && (window.onload = () => navigator.serviceWorker.register(`./sw.js?24021732`));
+        };
+
+    // Start TheeCal
+    start();
+</script>
 
 </html>
