@@ -16,13 +16,22 @@ The project is a work in progress. Hopefully, it can showcase the power of progr
 ### Background
 This project was created in a weekend a few months back after frustration from currently available desktop calculators and alternative PWA ones that fail to keep up with UI standards, e.g. Gnome's calculator.
 
+Gnome's calculator UI:
+
 ![GNOME Calculator](https://user-images.githubusercontent.com/55940669/226196919-19c159c4-6bb7-4e5e-be10-f036d0bc023c.png)
 
-
 ### Performance
-![Google PageSpeed Test Desktop](https://user-images.githubusercontent.com/55940669/226196200-8d446620-29ab-418b-84be-8930c776b005.png)
-![Google PageSpeed Test Mobile](https://user-images.githubusercontent.com/55940669/226196220-95657cea-d0c6-4f3b-8c28-5ea3e9656465.png)
+Google's PageSpeed [benchmarking](https://pagespeed.web.dev/analysis/https-theecal-com/5dsf43ltci?form_factor=mobile)
 
+![Google's PageSpeed Test Desktop](https://github.com/prhasn/TheeCal/assets/55940669/5d9b186b-876f-441d-b8c7-cd57081124dd)
+Google PageSpeed Test Desktop
+
+.
+
+![Google's PageSpeed Test Mobile](https://github.com/prhasn/TheeCal/assets/55940669/57208cc1-705f-4496-8c5e-d8cde80b4cf3)
+Google PageSpeed Test Mobile
+
+.
 
 ### Feedback
-For feedback tweet @TheeCalc
+For feedback post on X and tag [@TheeCalc](https://x.com/TheeCalc)
