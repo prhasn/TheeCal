@@ -21,14 +21,14 @@ Gnome's calculator UI:
 ![GNOME Calculator](https://user-images.githubusercontent.com/55940669/226196919-19c159c4-6bb7-4e5e-be10-f036d0bc023c.png)
 
 ### Performance
-Google's PageSpeed [benchmarking](https://pagespeed.web.dev/analysis/https-theecal-com/5dsf43ltci?form_factor=mobile)
+Google's PageSpeed [benchmarking](https://pagespeed.web.dev/analysis/https-theecal-com/4vp16oavte?form_factor=mobile)
 
-![Google's PageSpeed Test Desktop](https://github.com/prhasn/TheeCal/assets/55940669/5d9b186b-876f-441d-b8c7-cd57081124dd)
+![Google's PageSpeed Test Desktop](https://github.com/prhasn/TheeCal/assets/55940669/85d77e71-594c-4d75-8650-bc46998c8584)
 Google PageSpeed Test Desktop
 
 .
 
-![Google's PageSpeed Test Mobile](https://github.com/prhasn/TheeCal/assets/55940669/57208cc1-705f-4496-8c5e-d8cde80b4cf3)
+![Google's PageSpeed Test Mobile](https://github.com/prhasn/TheeCal/assets/55940669/4648b673-a150-49d6-88bf-127e38c75c72)
 Google PageSpeed Test Mobile
 
 .
